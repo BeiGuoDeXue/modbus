@@ -60,7 +60,8 @@ extern TIM_HandleTypeDef htim4;
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
 /* USER CODE BEGIN EV */
-
+extern void prvvUARTTxReadyISR(void);
+extern void prvvUARTRxISR(void);
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -239,7 +240,18 @@ void USART2_IRQHandler(void)
   /* USER CODE END USART2_IRQn 0 */
   HAL_UART_IRQHandler(&huart2);
   /* USER CODE BEGIN USART2_IRQn 1 */
+  if(__HAL_UART_GET_IT_SOURCE(&huart2, UART_IT_RXNE)!= RESET) 
+    {
+      prvvUARTRxISR();//�����ж�
+    }
 
+  if(__HAL_UART_GET_IT_SOURCE(&huart2, UART_IT_TXE)!= RESET) 
+    {
+      prvvUARTTxReadyISR();//�����ж�
+    }
+
+  HAL_NVIC_ClearPendingIRQ(USART2_IRQn);
+  HAL_UART_IRQHandler(&huart2);
   /* USER CODE END USART2_IRQn 1 */
 }
 
